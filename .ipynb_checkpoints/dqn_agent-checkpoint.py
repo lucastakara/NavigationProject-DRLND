@@ -110,6 +110,44 @@ class Agent():
         self.soft_update(self.qnetwork_local, self.qnetwork_target, TAU)
         
         
+    def soft_update(self, local_model, target_model, TAU):
+        """ Soft update model parameters.
+        ϴ_target = 𝜏 * ϴ_local + (1 - 𝛕) * ϴ_target
+        
+        Params
+        ======
+        local_model(Pytorch model): weights will be copied from
+        target_model(Pytorch model): weights will be copied to
+        TAU(float): interpolation parameter
+        
+        """
+        for target_param, local_param in zip (target_model.parameters(), local_model.parameters()):
+            target_param.data.copy_(TAU*local_param.data + (1.0 - TAU)*target_param.data)
+            
+    
+
+class ReplayBuffer():
+    """ Fixed-size buffer to store experience tuples. """
+    
+    def __init__(self, action_size, BUFFER_SIZE, BATCH_SIZE, seed):
+        """ Initialize a ReplayBuffer object.
+        
+        Params
+        ======
+        action_size(int): Dimension of each action
+        BUFFER_SIZE(int): Maximum size of buffer
+        BATCH_SIZE(int): size of each training batch
+        seed(int): Random seed
+        
+        """"
+        self.action_size = action_size
+        self.memory = deque(maxlen = BUFFER_SIZE)
+        self.BATCH_SIZE = BATCH_SIZE
+        self.experience = namedtuple("Experience", field_names = ['state','action','reward','next_state','done'])
+        self.seed = random.seed(seed)
+        
+
+        
         
         
             
