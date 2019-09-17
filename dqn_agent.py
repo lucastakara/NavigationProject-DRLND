@@ -36,7 +36,7 @@ class Agent():
         """
         self.state_size = state_size
         self.action_size = action_size
-        self.seed = random.random.seed(seed)
+        self.seed = random.seed(seed)
         
         # Q - Network
         self.qnetwork_local = QNetwork(state_size, action_size, seed).to(device)
@@ -59,5 +59,32 @@ class Agent():
             if len(self.memory) > BATCH_SIZE:
                 experiences = self.memory.sample()
                 self.learn(experiences, GAMMA)
+    
+    
+    def act (self, state, eps = 0.):
+        """ Returns actions for given state as per current policy 
+        
+        Params
+        ======
+        state(array_like): current state
+        eps(float): epsilon, for epsilon-greedy action selection
+        
+        """
+        state = torch.from_numpy(state).float().unsqueeze(0).to(device)
+        self.qnetwork_local.eval() # notify all layers that you are in eval mode
+        with torch.no_grad(): # impacts the autograd engine and deactivate it.
+            action_values = self.qnetwork_local(state)
+        self.qnetwork_local.train() # Train mode
+        
+        # Epsilon-Greedy action selection
+        if random.random() > eps:
+            return np.argmax(action_values.cpu.data.numpy())
+        else:
+            return random.choice(np.arange(self.action_size))
+    
+            
+        
+        
+        
         
         
