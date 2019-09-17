@@ -165,7 +165,9 @@ class ReplayBuffer():
         return (states, actions, rewards, next_states, dones)
     
     
-    
+    def __len__(self):
+        """ Return the current size of internal memory. """
+        return len(self.memory)
         
         
         
