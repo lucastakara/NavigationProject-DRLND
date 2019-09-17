@@ -54,7 +54,7 @@ class Agent():
         self.memory.add(state, action, reward, next_state, done)
         # Learn every UPDATE_EVERY time steps
         self.t_step = (self.t_step + 1) % UPDATE_EVERY
-        if t_step == 0:
+        if self.t_step == 0:
             # If enough samples are available in memory, get random subset and learn
             if len(self.memory) > BATCH_SIZE:
                 experiences = self.memory.sample()
@@ -78,7 +78,7 @@ class Agent():
         
         # Epsilon-Greedy action selection
         if random.random() > eps:
-            return np.argmax(action_values.cpu.data.numpy())
+            return np.argmax(action_values.cpu().data.numpy())
         else:
             return random.choice(np.arange(self.action_size))
     
@@ -91,12 +91,12 @@ class Agent():
         gamma(float): discount factor
         
         """
-        states, actions, rewards, next_states, done = experiences
+        states, actions, rewards, next_states, dones = experiences
         
         # Get max predicted Q values (for next states) from target model
         Q_targets_next = self.qnetwork_target(next_states).detach().max(1)[0].unsqueeze(1)
         # Compute Q targets for current states
-        Q_targets = rewards + (GAMMA*Q_targets_next*(1 - dones))
+        Q_targets = rewards + (gamma *Q_targets_next*(1 - dones))
         # Get expected Q values from local model
         Q_expected = self.qnetwork_local(states).gather(1,actions)
         # Compute loss
@@ -126,7 +126,7 @@ class Agent():
             
     
 
-class ReplayBuffer():
+class ReplayBuffer:
     """ Fixed-size buffer to store experience tuples. """
     
     def __init__(self, action_size, BUFFER_SIZE, BATCH_SIZE, seed):
@@ -139,11 +139,11 @@ class ReplayBuffer():
         BATCH_SIZE(int): size of each training batch
         seed(int): Random seed
         
-        """"
+        """
         self.action_size = action_size
         self.memory = deque(maxlen = BUFFER_SIZE)
         self.BATCH_SIZE = BATCH_SIZE
-        self.experience = namedtuple("Experience", field_names = ['state','action','reward','next_state','done'])
+        self.experience = namedtuple("Experience",field_names = ['state','action','reward','next_state','done'])
         self.seed = random.seed(seed)
         
     
@@ -158,9 +158,9 @@ class ReplayBuffer():
         experiences = random.sample(self.memory, k = self.BATCH_SIZE)
         
         states = torch.from_numpy(np.vstack([e.state for e in experiences if e is not None])).float().to(device)
-        actions = torch.from_numpy(np.vstack([e.action for e in experiences if e is not None])).float().to(device)
+        actions = torch.from_numpy(np.vstack([e.action for e in experiences if e is not None])).long().to(device)
         rewards = torch.from_numpy(np.vstack([e.reward for e in experiences if e is not None])).float().to(device)
-        next_state = torch.from_numpy(np.vstack([e.next_state for e in experiences if e is not None])).float().to(device)
+        next_states = torch.from_numpy(np.vstack([e.next_state for e in experiences if e is not None])).float().to(device)
         dones = torch.from_numpy(np.vstack([e.done for e in experiences if e is not None]).astype(np.uint8)).float().to(device)
         return (states, actions, rewards, next_states, dones)
     
