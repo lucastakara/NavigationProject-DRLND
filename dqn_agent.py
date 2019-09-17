@@ -82,6 +82,36 @@ class Agent():
         else:
             return random.choice(np.arange(self.action_size))
     
+    def learn(self, experiences, gamma):
+        """ Update value parameters using given batch of experience tuples.
+        
+        Params
+        ======
+        experiences(Tuple[torch.Variable]): tuple of (s,a,r,s',done) tuples
+        gamma(float): discount factor
+        
+        """
+        states, actions, rewards, next_states, done = experiences
+        
+        # Get max predicted Q values (for next states) from target model
+        Q_targets_next = self.qnetwork_target(next_states).detach().max(1)[0].unsqueeze(1)
+        # Compute Q targets for current states
+        Q_targets = rewards + (GAMMA*Q_targets_next*(1 - dones))
+        # Get expected Q values from local model
+        Q_expected = self.qnetwork_local(states).gather(1,actions)
+        # Compute loss
+        loss = F.mse_loss(Q_expected,Q_targets)
+        # Minimize the loss
+        self.optimizer.zero_grad() #set gradients to zero before starting to do backpropragation 
+        loss.backward()
+        self.optimizer.step() # performs a parameter update based on the current gradient 
+        
+        # -------- Update target Network --------- #
+        self.soft_update(self.qnetwork_local, self.qnetwork_target, TAU)
+        
+        
+        
+        
             
         
         
