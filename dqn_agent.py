@@ -110,6 +110,19 @@ class Agent():
         self.soft_update(self.qnetwork_local, self.qnetwork_target, TAU)
         
         
+    def soft_update(self, local_model, target_model, TAU):
+        """ Soft update model parameters.
+        ϴ_target = 𝜏 * ϴ_local + (1 - 𝛕) * ϴ_target
+        
+        Params
+        ======
+        local_model(Pytorch model): weights will be copied from
+        target_model(Pytorch model): weights will be copied to
+        TAU(float): interpolation parameter
+        
+        """
+        for target_param, local_param in zip (target_model.parameters(), local_model.parameters()):
+            target_param.data.copy_(TAU*local_param.data + (1.0 - TAU)*target_param.data)
         
         
             
