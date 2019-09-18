@@ -73,7 +73,7 @@ class Agent():
         state = torch.from_numpy(state).float().unsqueeze(0).to(device)
         self.qnetwork_local.eval() # notify all layers that you are in eval mode
         with torch.no_grad(): # impacts the autograd engine and deactivate it.
-            action_values = self.qnetwork_local(state)
+            action_values = self.qnetwork_target(state) # DDQN - Target estimate the action_values, local evaluate 
         self.qnetwork_local.train() # Train mode
         
         # Epsilon-Greedy action selection
