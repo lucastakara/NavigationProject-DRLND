@@ -175,3 +175,8 @@ In order to connect python with the environment, which is already saved in the W
  
 ` env = UnityEnvironment(file_name="/Users/Desktop/Banana.app)`
 
+### Step 5: Training and Testing the Agent
+
+Open `Navigation.ipynb` file and follow the given instructions for training and testing your agent!
+
+Good Luck!! 
