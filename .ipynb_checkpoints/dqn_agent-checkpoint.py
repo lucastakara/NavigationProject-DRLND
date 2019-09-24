@@ -102,7 +102,7 @@ class Agent():
         # Compute loss
         loss = F.mse_loss(Q_expected,Q_targets)
         # Minimize the loss
-        self.optimizer.zero_grad() #set gradients to zero before starting to do backpropragation 
+        self.optimizer.zero_grad() # set gradients to zero before starting to do backpropragation 
         loss.backward()
         self.optimizer.step() # performs a parameter update based on the current gradient 
         
